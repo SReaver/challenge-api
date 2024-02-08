@@ -18,6 +18,12 @@ export class UserEntity extends Document {
 
   @Prop()
   email: string;
+
+  @Prop()
+  hash: string;
+
+  @Prop()
+  salt: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(UserEntity);

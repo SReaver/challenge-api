@@ -1,6 +1,7 @@
 import { User } from 'src/users/domain/user';
 import { UserEntity } from '../entities/user.entity';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
+import { HashWithSalt } from 'src/iam/hashing/hash-with-salt.interface';
 
 export class UserMapper {
   static toDomain(userEntity: UserEntity): User {
@@ -14,13 +15,24 @@ export class UserMapper {
   }
 
   static toPersistence(
-    user: Omit<User, 'id'>,
-    userModel: Model<User>,
-  ): UserEntity {
+    user: User,
+    userModel: Model<UserEntity>,
+  ): Partial<UserEntity> {
     const entity = new userModel();
     entity.email = user.email;
     entity.displayName = user.displayName;
     entity.nickName = user.nickName;
+    if (user.id) {
+      entity._id = new Types.ObjectId(user.id);
+    }
+
     return entity;
+  }
+
+  static toAuth(userEntity: UserEntity): HashWithSalt {
+    return {
+      hash: userEntity.hash,
+      salt: userEntity.salt,
+    };
   }
 }

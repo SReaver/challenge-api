@@ -5,6 +5,7 @@ import * as Joi from '@hapi/joi';
 import { UsersModule } from './users/application/users.module';
 import { ApplicationBootstrapOptions } from './common/interfaces/application-bootstrap-options.interface';
 import { UsersInfrastructureModule } from './users/infrastructure/users-infrastructure.module';
+import { IamModule } from './iam/iam.module';
 
 const validationSchema = Joi.object({
   NODE_ENV: Joi.string()
@@ -15,13 +16,13 @@ const validationSchema = Joi.object({
 
 @Module({
   imports: [
-    CoreModule,
     ConfigModule.forRoot({
       expandVariables: true,
       validationSchema,
       envFilePath:
         process.env.NODE_ENV === 'production' ? '.env' : '.development.env',
     }),
+    IamModule,
   ],
   controllers: [],
   providers: [],
