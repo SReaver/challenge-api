@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { UserRepository } from 'src/users/application/ports/user.repository';
 import { User } from 'src/users/domain/user';
 import { UserEntity } from '../entities/user.entity';
@@ -13,6 +17,11 @@ export class MongoUserRepository implements UserRepository {
   ) {}
 
   async create(user: Omit<User, 'id'>): Promise<User> {
+    const foundUser = await this.findOneByEmail(user.email);
+    if (foundUser)
+      throw new ConflictException(
+        `User with email ${user.email} already exists`,
+      );
     const persistenceModel = UserMapper.toPersistence(user, this.userModel);
     const newEntity = await persistenceModel.save();
     return UserMapper.toDomain(newEntity);
@@ -27,5 +36,9 @@ export class MongoUserRepository implements UserRepository {
     const user = await this.userModel.findById(userId);
     if (!user) throw new NotFoundException();
     return UserMapper.toDomain(user);
+  }
+
+  findOneByEmail(email: string) {
+    return this.userModel.findOne({ email });
   }
 }
