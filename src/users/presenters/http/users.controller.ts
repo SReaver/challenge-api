@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Param, Post } from '@nestjs/common';
 import { UsersService } from 'src/users/application/users.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { CreateUserCommand } from 'src/users/application/commands/create-user.command';
@@ -8,7 +8,10 @@ import { User } from 'src/users/domain/user';
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly logger: Logger,
+  ) {}
 
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Post()
